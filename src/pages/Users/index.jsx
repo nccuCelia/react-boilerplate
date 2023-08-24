@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button } from 'antd';
+import {
+  Table, Space, Button, Modal, Form, Input,
+} from 'antd';
 import { useUsers } from '../../api/users';
+
+const formItemLayout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 8 },
+};
 
 function UserList() {
   /*
@@ -22,6 +29,7 @@ function UserList() {
   );
   */
   const { users, updateUserById, deleteUserById } = useUsers();
+  const [form] = Form.useForm();
 
   const columns = [
     {
@@ -54,12 +62,37 @@ function UserList() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => updateUserById(record.id, record.data)}>Edit</Button>
+          <Button type="primary" onClick={showModal}>
+            Edit
+          </Button>
+          <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Form form={form} name="dynamic_rule" style={{ maxWidth: 600 }}>
+              <Form.Item
+                {...formItemLayout}
+                name="username"
+                label="Name"
+                rules={[{ required: true, message: 'Please input your name' }]}
+              >
+                <Input placeholder="Please input your name" />
+              </Form.Item>
+            </Form>
+          </Modal>
           <Button onClick={() => deleteUserById(record.id, record.data)}>Delete</Button>
         </Space>
       ),
     },
   ];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div>
